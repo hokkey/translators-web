@@ -1,0 +1,37 @@
+{
+  "name": "translators-web",
+  "productName": "Translators Web",
+  "version": "1.0.0",
+  "main": "dist/main.js",
+  "description": "A simple Electron app which combines Grammarly and Google Translator into one window",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc -w",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "start": "npm run build && electron ./dist/main.js",
+    "clean": "rm -rf ./build",
+    "package": "npm run clean && npm run build && electron-packager . --out=build"
+  },
+  "keywords": [
+    "Electron",
+    "typescript"
+  ],
+  "build": {
+    "platform": "darwin",
+    "arch": "x64",
+    "electronVersion": "7.1.1"
+  },
+  "author": "y_hokkey",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hokkey/translators-web.git"
+  },
+  "devDependencies": {
+    "electron": "^7.1.1",
+    "electron-packager": "^14.1.0",
+    "tslint": "^5.19.0",
+    "typescript": "^3.6.0"
+  },
+  "dependencies": {}
+}
