@@ -1,44 +1,52 @@
 import { app, BrowserWindow, screen } from "electron";
-import { ViewPane } from "./lib/view-pane";
+import {IViewPaneConf, ViewPane} from "./lib/view-pane";
 
-app.on("ready", init);
+const GRAMMARLY_URL = "https://www.grammarly.com/signin?allowUtmParams=true";
+const GOOGLE_TRANSLATOR_URL = "https://translate.google.com/";
+const GOOGLE_TRANSLATOR_HEIGHT = 320;
+const GOOGLE_TRANSLATOR_CUSTOM_CSS = `
+  header.gb_la { display: none !important; }
+  .frame { border-top: 3px solid black !important; padding-bottom: 66px !important; }
+`;
 
-function init(): void {
+app.on("ready", () => {
 
   const win = createWindow();
 
-  const heightView2 = 320;
-
-  const view1 = new ViewPane(
-    "https://www.grammarly.com/signin?allowUtmParams=true",
-    () => {
-     return {
-       height: win.getBounds().height - heightView2,
-       width: win.getBounds().width,
-       x: 0,
-       y: 0,
-     };
+  const viewConfigs: IViewPaneConf[] = [
+    {
+      boundsFn: () => {
+        return {
+          height: win.getBounds().height - GOOGLE_TRANSLATOR_HEIGHT,
+          width: win.getBounds().width,
+          x: 0,
+          y: 0,
+        };
+      },
+      url: GRAMMARLY_URL,
     },
-  );
-
-  const view2 = new ViewPane(
-    "https://translate.google.com/",
-    () => {
-      return {
-        height: heightView2,
-        width: win.getBounds().width,
-        x: 0,
-        y: win.getBounds().height - heightView2,
-      };
+    {
+      boundsFn: () => {
+        return {
+          height: GOOGLE_TRANSLATOR_HEIGHT,
+          width: win.getBounds().width,
+          x: 0,
+          y: win.getBounds().height - GOOGLE_TRANSLATOR_HEIGHT,
+        };
+      },
+      css: GOOGLE_TRANSLATOR_CUSTOM_CSS,
+      url: GOOGLE_TRANSLATOR_URL,
     },
-`
-      header.gb_la { display: none !important; }
-      .frame { border-top: 3px solid black !important; padding-bottom: 66px !important; }
-    `,
-  );
+  ];
 
-  applyViews(win, view1, view2);
-}
+  const panel = createPanel(viewConfigs);
+
+  applyPanel(win, ...panel);
+
+  win.on("resize", createOnResizeFn(...panel));
+
+});
+
 
 function createWindow(): BrowserWindow {
   const workArea = screen.getPrimaryDisplay().workArea;
@@ -48,17 +56,25 @@ function createWindow(): BrowserWindow {
   });
 }
 
-function applyViews(win: BrowserWindow, ...views: ViewPane[]) {
-  views.forEach((view) => {
-    win.addBrowserView(view.getBrowserView());
-    view.setBounds();
-    view.loadURL();
-    view.insertCSS();
+function createPanel(configs: IViewPaneConf[]): ViewPane[] {
+  return configs.map((conf) => {
+    return new ViewPane(conf);
   });
+}
 
-  win.on("resize", () => {
-    views.forEach((view) => {
-      view.setBounds();
-    });
+function applyPanel(win: BrowserWindow, ...panel: ViewPane[]) {
+  panel.forEach((pane) => {
+    win.addBrowserView(pane.getBrowserView());
+    pane.setBounds();
+    pane.loadURL();
+    pane.insertCSS();
   });
+}
+
+function createOnResizeFn(...panel: ViewPane[]) {
+  return () => {
+    panel.forEach((pane) => {
+      pane.setBounds();
+    });
+  };
 }

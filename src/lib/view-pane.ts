@@ -1,27 +1,35 @@
 import { BrowserView, Rectangle } from "electron";
 
+export interface IViewPaneConf {
+  url: string;
+  boundsFn: () => Rectangle;
+  css?: string;
+}
+
 export class ViewPane {
 
   public static create(): BrowserView {
-    const viewConfig = {
+    return new BrowserView({
       webPreferences: {
         nodeIntegration: false,
       },
-    };
-
-    return new BrowserView(viewConfig);
+    });
   }
 
-  public browserView: BrowserView;
-  public boundsFn: () => Rectangle;
-  public url: string;
-  public css?: string;
+  private readonly browserView: BrowserView;
+  private readonly boundsFn: () => Rectangle;
+  private readonly url: string;
+  private readonly css?: string;
 
-  constructor(url: string, boundsFn: () => Rectangle, css?: string) {
+  constructor(conf: IViewPaneConf) {
     this.browserView = ViewPane.create();
-    this.url = url;
-    this.boundsFn = boundsFn;
-    this.css = css;
+    this.boundsFn = conf.boundsFn;
+    this.url = conf.url;
+    this.css = conf.css;
+  }
+
+  public getBrowserView(): BrowserView {
+    return this.browserView;
   }
 
   public loadURL(): void {
@@ -34,10 +42,6 @@ export class ViewPane {
         this.browserView.webContents.insertCSS(this.css);
       });
     }
-  }
-
-  public getBrowserView(): BrowserView {
-    return this.browserView;
   }
 
   public setBounds(): void {
