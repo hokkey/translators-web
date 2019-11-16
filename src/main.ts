@@ -1,5 +1,5 @@
 import { app, BrowserWindow, screen } from "electron";
-import { ViewPane } from "./view-pane";
+import { ViewPane } from "./lib/view-pane";
 
 app.on("ready", init);
 

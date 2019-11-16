@@ -2,15 +2,15 @@
   "name": "translators-web",
   "productName": "Translators Web",
   "version": "1.0.0",
-  "main": "dist/main.js",
+  "main": "./main.js",
   "description": "A simple Electron app which combines Grammarly and Google Translator into one window",
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
     "lint": "tslint -c tslint.json -p tsconfig.json",
-    "start": "npm run build && electron ./dist/main.js",
-    "clean": "rm -rf ./build",
-    "package": "npm run clean && npm run build && electron-packager . --out=build"
+    "start": "npm run build && electron .",
+    "clean": "rm -rf ./packages/*",
+    "package": "npm run clean && npm run build && electron-packager . --out=packages --ignore=^/src --ignore=^/.idea"
   },
   "keywords": [
     "Electron",

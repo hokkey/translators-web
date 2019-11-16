@@ -5,6 +5,18 @@
 - Grammarly
 - Google翻訳
 
+## How to build
+
+```
+npm i
+
+# compile typescript and launch electron
+npm run start
+
+# creae a packaged app
+npm run package
+
+```
 ## License
 
 [MIT](LICENSE)

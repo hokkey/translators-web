@@ -62,5 +62,5 @@ typings/
 
 # others
 .idea
-build
-dist
+packages
+*.js.map
