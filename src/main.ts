@@ -5,8 +5,7 @@ import {IViewPaneConf, ViewPane} from "./lib/view-pane";
 app.on("ready", () => {
 
   const win = createWindow();
-
-  const viewConfigs: IViewPaneConf[] = [
+  const panel = createPanel([
     {
       boundsFn: () => {
         return {
@@ -30,12 +29,9 @@ app.on("ready", () => {
       css: CONST.GOOGLE_TRANSLATOR_CUSTOM_CSS,
       url: CONST.GOOGLE_TRANSLATOR_URL,
     },
-  ];
-
-  const panel = createPanel(viewConfigs);
+  ]);
 
   applyPanel(win, ...panel);
-
   win.on("resize", createOnResizeFn(...panel));
 
 });
@@ -49,9 +45,7 @@ function createWindow(): BrowserWindow {
 }
 
 function createPanel(configs: IViewPaneConf[]): ViewPane[] {
-  return configs.map((conf) => {
-    return new ViewPane(conf);
-  });
+  return configs.map((conf) => new ViewPane(conf));
 }
 
 function applyPanel(win: BrowserWindow, ...panel: ViewPane[]) {
@@ -65,8 +59,6 @@ function applyPanel(win: BrowserWindow, ...panel: ViewPane[]) {
 
 function createOnResizeFn(...panel: ViewPane[]) {
   return () => {
-    panel.forEach((pane) => {
-      pane.updateBounds();
-    });
+    panel.forEach((pane) => pane.updateBounds());
   };
 }

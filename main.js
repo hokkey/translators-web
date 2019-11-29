@@ -12,7 +12,7 @@ var CONST = require("./constants");
 var view_pane_1 = require("./lib/view-pane");
 electron_1.app.on("ready", function () {
     var win = createWindow();
-    var viewConfigs = [
+    var panel = createPanel([
         {
             boundsFn: function () {
                 return {
@@ -36,8 +36,7 @@ electron_1.app.on("ready", function () {
             css: CONST.GOOGLE_TRANSLATOR_CUSTOM_CSS,
             url: CONST.GOOGLE_TRANSLATOR_URL
         },
-    ];
-    var panel = createPanel(viewConfigs);
+    ]);
     applyPanel.apply(void 0, __spreadArrays([win], panel));
     win.on("resize", createOnResizeFn.apply(void 0, panel));
 });
@@ -49,9 +48,7 @@ function createWindow() {
     });
 }
 function createPanel(configs) {
-    return configs.map(function (conf) {
-        return new view_pane_1.ViewPane(conf);
-    });
+    return configs.map(function (conf) { return new view_pane_1.ViewPane(conf); });
 }
 function applyPanel(win) {
     var panel = [];
@@ -71,9 +68,7 @@ function createOnResizeFn() {
         panel[_i] = arguments[_i];
     }
     return function () {
-        panel.forEach(function (pane) {
-            pane.updateBounds();
-        });
+        panel.forEach(function (pane) { return pane.updateBounds(); });
     };
 }
 //# sourceMappingURL=main.js.map
