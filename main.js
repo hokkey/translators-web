@@ -8,38 +8,33 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
 };
 exports.__esModule = true;
 var electron_1 = require("electron");
+var CONST = require("./constants");
 var view_pane_1 = require("./lib/view-pane");
-var MAX_INITIAL_WIN_HEIGHT = 940;
-var MAX_INITIAL_WIN_WIDTH = 1300;
-var GRAMMARLY_URL = "https://www.grammarly.com/signin?allowUtmParams=true";
-var GOOGLE_TRANSLATOR_URL = "https://translate.google.com/";
-var GOOGLE_TRANSLATOR_HEIGHT = 320;
-var GOOGLE_TRANSLATOR_CUSTOM_CSS = "\n  body > header { display: none !important; }\n  .frame { border-top: 3px solid black !important; padding-bottom: 66px !important; padding-top: 15px !important; }\n  .input-button-container { display: none !important; }\n";
 electron_1.app.on("ready", function () {
     var win = createWindow();
     var viewConfigs = [
         {
             boundsFn: function () {
                 return {
-                    height: win.getBounds().height - GOOGLE_TRANSLATOR_HEIGHT,
+                    height: win.getBounds().height - CONST.GOOGLE_TRANSLATOR_HEIGHT,
                     width: win.getBounds().width,
                     x: 0,
                     y: 0
                 };
             },
-            url: GRAMMARLY_URL
+            url: CONST.GRAMMARLY_URL
         },
         {
             boundsFn: function () {
                 return {
-                    height: GOOGLE_TRANSLATOR_HEIGHT,
+                    height: CONST.GOOGLE_TRANSLATOR_HEIGHT,
                     width: win.getBounds().width,
                     x: 0,
-                    y: win.getBounds().height - GOOGLE_TRANSLATOR_HEIGHT
+                    y: win.getBounds().height - CONST.GOOGLE_TRANSLATOR_HEIGHT
                 };
             },
-            css: GOOGLE_TRANSLATOR_CUSTOM_CSS,
-            url: GOOGLE_TRANSLATOR_URL
+            css: CONST.GOOGLE_TRANSLATOR_CUSTOM_CSS,
+            url: CONST.GOOGLE_TRANSLATOR_URL
         },
     ];
     var panel = createPanel(viewConfigs);
@@ -49,8 +44,8 @@ electron_1.app.on("ready", function () {
 function createWindow() {
     var workArea = electron_1.screen.getPrimaryDisplay().workArea;
     return new electron_1.BrowserWindow({
-        height: Math.min(workArea.height, MAX_INITIAL_WIN_HEIGHT),
-        width: Math.min(workArea.width, MAX_INITIAL_WIN_WIDTH)
+        height: Math.min(workArea.height, CONST.MAX_INITIAL_WIN_HEIGHT),
+        width: Math.min(workArea.width, CONST.MAX_INITIAL_WIN_WIDTH)
     });
 }
 function createPanel(configs) {
