@@ -9,10 +9,12 @@ var __spreadArrays = (this && this.__spreadArrays) || function () {
 exports.__esModule = true;
 var electron_1 = require("electron");
 var view_pane_1 = require("./lib/view-pane");
+var MAX_INITIAL_WIN_HEIGHT = 940;
+var MAX_INITIAL_WIN_WIDTH = 1300;
 var GRAMMARLY_URL = "https://www.grammarly.com/signin?allowUtmParams=true";
 var GOOGLE_TRANSLATOR_URL = "https://translate.google.com/";
 var GOOGLE_TRANSLATOR_HEIGHT = 320;
-var GOOGLE_TRANSLATOR_CUSTOM_CSS = "\n  header.gb_la { display: none !important; }\n  .frame { border-top: 3px solid black !important; padding-bottom: 66px !important; }\n";
+var GOOGLE_TRANSLATOR_CUSTOM_CSS = "\n  body > header { display: none !important; }\n  .frame { border-top: 3px solid black !important; padding-bottom: 66px !important; padding-top: 15px !important; }\n  .input-button-container { display: none !important; }\n";
 electron_1.app.on("ready", function () {
     var win = createWindow();
     var viewConfigs = [
@@ -47,8 +49,8 @@ electron_1.app.on("ready", function () {
 function createWindow() {
     var workArea = electron_1.screen.getPrimaryDisplay().workArea;
     return new electron_1.BrowserWindow({
-        height: workArea.height,
-        width: workArea.width
+        height: Math.min(workArea.height, MAX_INITIAL_WIN_HEIGHT),
+        width: Math.min(workArea.width, MAX_INITIAL_WIN_WIDTH)
     });
 }
 function createPanel(configs) {
@@ -62,8 +64,8 @@ function applyPanel(win) {
         panel[_i - 1] = arguments[_i];
     }
     panel.forEach(function (pane) {
-        win.addBrowserView(pane.getBrowserView());
-        pane.setBounds();
+        pane.addTo(win);
+        pane.updateBounds();
         pane.loadURL();
         pane.insertCSS();
     });
@@ -75,7 +77,7 @@ function createOnResizeFn() {
     }
     return function () {
         panel.forEach(function (pane) {
-            pane.setBounds();
+            pane.updateBounds();
         });
     };
 }

@@ -1,8 +1,8 @@
 import { app, BrowserWindow, screen } from "electron";
 import {IViewPaneConf, ViewPane} from "./lib/view-pane";
 
-const MAX_INITIAL_WIN_HEIGHT = 800;
-const MAX_INITIAL_WIN_WIDTH = 1400;
+const MAX_INITIAL_WIN_HEIGHT = 940;
+const MAX_INITIAL_WIN_WIDTH = 1300;
 
 const GRAMMARLY_URL = "https://www.grammarly.com/signin?allowUtmParams=true";
 const GOOGLE_TRANSLATOR_URL = "https://translate.google.com/";
@@ -55,8 +55,8 @@ app.on("ready", () => {
 function createWindow(): BrowserWindow {
   const workArea = screen.getPrimaryDisplay().workArea;
   return new BrowserWindow({
-    height: Math.max(workArea.height, MAX_INITIAL_WIN_HEIGHT),
-    width: Math.max(workArea.width, MAX_INITIAL_WIN_WIDTH),
+    height: Math.min(workArea.height, MAX_INITIAL_WIN_HEIGHT),
+    width: Math.min(workArea.width, MAX_INITIAL_WIN_WIDTH),
   });
 }
 
@@ -68,8 +68,8 @@ function createPanel(configs: IViewPaneConf[]): ViewPane[] {
 
 function applyPanel(win: BrowserWindow, ...panel: ViewPane[]) {
   panel.forEach((pane) => {
-    win.addBrowserView(pane.getBrowserView());
-    pane.setBounds();
+    pane.addTo(win);
+    pane.updateBounds();
     pane.loadURL();
     pane.insertCSS();
   });
@@ -78,7 +78,7 @@ function applyPanel(win: BrowserWindow, ...panel: ViewPane[]) {
 function createOnResizeFn(...panel: ViewPane[]) {
   return () => {
     panel.forEach((pane) => {
-      pane.setBounds();
+      pane.updateBounds();
     });
   };
 }

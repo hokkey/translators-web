@@ -1,4 +1,5 @@
 import { BrowserView, Rectangle } from "electron";
+import BrowserWindow = Electron.BrowserWindow;
 
 export interface IViewPaneConf {
   url: string;
@@ -21,6 +22,8 @@ export class ViewPane {
   private readonly url: string;
   private readonly css?: string;
 
+  private parent?: BrowserWindow;
+
   constructor(conf: IViewPaneConf) {
     this.browserView = ViewPane.create();
     this.boundsFn = conf.boundsFn;
@@ -28,23 +31,29 @@ export class ViewPane {
     this.css = conf.css;
   }
 
-  public getBrowserView(): BrowserView {
-    return this.browserView;
+  public addTo(win: BrowserWindow): void {
+    this.parent = win;
+    this.parent.addBrowserView(this.browserView);
   }
 
-  public loadURL(): void {
-    this.browserView.webContents.loadURL(this.url);
+  public loadURL(): Promise<void> {
+    return this.browserView.webContents.loadURL(this.url);
   }
 
-  public insertCSS(): void {
-    if (this.css) {
-      this.browserView.webContents.on("dom-ready", () => {
-        this.browserView.webContents.insertCSS(this.css);
-      });
-    }
+  public insertCSS(): Promise<string> {
+    return new Promise((resolve) => {
+      if (this.css) {
+        this.browserView.webContents.on("dom-ready", () => {
+          resolve(this.browserView.webContents.insertCSS(this.css));
+        });
+
+      } else {
+        resolve();
+      }
+    });
   }
 
-  public setBounds(): void {
+  public updateBounds(): void {
     this.browserView.setBounds(this.boundsFn());
   }
 }
