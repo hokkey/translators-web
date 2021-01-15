@@ -41,6 +41,9 @@ function createWindow(): BrowserWindow {
   return new BrowserWindow({
     height: Math.min(workArea.height, CONST.MAX_INITIAL_WIN_HEIGHT),
     width: Math.min(workArea.width, CONST.MAX_INITIAL_WIN_WIDTH),
+    webPreferences: {
+      contextIsolation: true
+    }
   });
 }
 

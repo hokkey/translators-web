@@ -12,7 +12,7 @@ export class ViewPane {
   public static create(): BrowserView {
     return new BrowserView({
       webPreferences: {
-        nodeIntegration: false,
+        contextIsolation: true
       },
     });
   }
