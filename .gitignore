@@ -64,3 +64,4 @@ typings/
 .idea
 packages
 *.js.map
+build/
