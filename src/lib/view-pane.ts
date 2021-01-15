@@ -5,6 +5,7 @@ export interface IViewPaneConf {
   url: string;
   boundsFn: () => Rectangle;
   css?: string;
+  useragent?: string;
 }
 
 export class ViewPane {
@@ -21,6 +22,7 @@ export class ViewPane {
   private readonly boundsFn: () => Rectangle;
   private readonly url: string;
   private readonly css?: string;
+  private readonly useragent?: string;
 
   private parent?: BrowserWindow;
 
@@ -29,6 +31,7 @@ export class ViewPane {
     this.boundsFn = conf.boundsFn;
     this.url = conf.url;
     this.css = conf.css;
+    this.useragent = conf.useragent;
   }
 
   public addTo(win: BrowserWindow): void {
@@ -37,6 +40,9 @@ export class ViewPane {
   }
 
   public loadURL(): Promise<void> {
+    if (this.useragent) {
+      this.browserView.webContents.setUserAgent(this.useragent)
+    }
     return this.browserView.webContents.loadURL(this.url);
   }
 

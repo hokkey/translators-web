@@ -1,7 +1,7 @@
 {
   "name": "translators-web",
   "productName": "Translators Web",
-  "version": "1.1.0",
+  "version": "1.2.0",
   "private": true,
   "main": "./build/main.js",
   "description": "A simple Electron app which combines Grammarly and Google Translate into one window",

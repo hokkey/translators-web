@@ -1,11 +1,12 @@
 # translators-web
 
-A simple Electron app which combines Grammarly and Google Translate into one window
+A simple Electron app which combines useful English writing support services 
 
 英作文・翻訳に便利なWebサービスを1つのウィンドウに統合して表示するElectronアプリです。
 
 - Grammarly
-- Google翻訳
+- Google Translate
+- weblio
 
 ## How to build
 
