@@ -28,10 +28,10 @@
     "url": "https://github.com/hokkey/translators-web.git"
   },
   "devDependencies": {
-    "electron": "^7.1.1",
-    "electron-packager": "^14.1.0",
-    "tslint": "^5.20.1",
-    "typescript": "^3.7.2"
+    "electron": "^11.2.0",
+    "electron-packager": "^15.2.0",
+    "tslint": "^6.1.3",
+    "typescript": "^4.1.3"
   },
   "dependencies": {}
 }
