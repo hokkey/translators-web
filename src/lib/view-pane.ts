@@ -48,7 +48,7 @@ export class ViewPane {
         });
 
       } else {
-        resolve();
+        resolve('');
       }
     });
   }
