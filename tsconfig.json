@@ -7,7 +7,13 @@
     "baseUrl": ".",
     "paths": {
       "*": ["node_modules/*", "src"]
-    }
+    },
+    "lib": [
+      "dom",
+      "es5",
+      "scripthost",
+      "es2015.promise"
+    ]
   },
   "include": [
     "src/**/*"
