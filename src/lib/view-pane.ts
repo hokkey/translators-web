@@ -1,65 +1,74 @@
-import { BrowserView, Rectangle } from "electron";
-import BrowserWindow = Electron.BrowserWindow;
+import { BrowserView, BrowserViewConstructorOptions, BrowserWindow } from 'electron'
 
-export interface IViewPaneConf {
-  url: string;
-  boundsFn: () => Rectangle;
-  css?: string;
-  useragent?: string;
+type NullableRectangle = {
+  width: number | null
+  height: number | null
+  x: number | null
+  y: number | null
+}
+
+type IBrowserView = new (options: BrowserViewConstructorOptions) => BrowserView
+
+export type ViewPaneConf = {
+  url: string
+  boundsOffset: NullableRectangle
+  css?: string
+  useragent?: string
 }
 
 export class ViewPane {
+  public readonly url: string = ''
+  private readonly boundsOffset: NullableRectangle
+  private readonly css?: string
+  private readonly useragent?: string
+  private readonly browserView: BrowserView
 
-  public static create(): BrowserView {
-    return new BrowserView({
+  constructor(View: IBrowserView, conf: ViewPaneConf) {
+    this.browserView = new View({
       webPreferences: {
         contextIsolation: true
-      },
-    });
+      }
+    })
+    Object.assign<ViewPane, ViewPaneConf>(this, conf)
   }
 
-  private readonly browserView: BrowserView;
-  private readonly boundsFn: () => Rectangle;
-  private readonly url: string;
-  private readonly css?: string;
-  private readonly useragent?: string;
-
-  private parent?: BrowserWindow;
-
-  constructor(conf: IViewPaneConf) {
-    this.browserView = ViewPane.create();
-    this.boundsFn = conf.boundsFn;
-    this.url = conf.url;
-    this.css = conf.css;
-    this.useragent = conf.useragent;
+  public mount(win: BrowserWindow): Promise<[void, string]> {
+    win.addBrowserView(this.browserView)
+    this.updateBounds(win)
+    win.on('resize', () => this.updateBounds(win))
+    return Promise.all([this.loadURL(), this.insertCSS()])
   }
 
-  public addTo(win: BrowserWindow): void {
-    this.parent = win;
-    this.parent.addBrowserView(this.browserView);
+  private updateBounds(win: BrowserWindow): void {
+    const { width, height } = win.getBounds()
+    this.browserView.setBounds({
+      width: this.calcBounds(this.boundsOffset.width, width),
+      height: this.calcBounds(this.boundsOffset.height, height),
+      x: this.calcBounds(this.boundsOffset.x, width),
+      y: this.calcBounds(this.boundsOffset.y, height)
+    })
   }
 
-  public loadURL(): Promise<void> {
+  private loadURL(): Promise<void> {
     if (this.useragent) {
       this.browserView.webContents.setUserAgent(this.useragent)
     }
-    return this.browserView.webContents.loadURL(this.url);
+    return this.browserView.webContents.loadURL(this.url)
   }
 
-  public insertCSS(): Promise<string> {
+  private insertCSS(): Promise<string> {
     return new Promise((resolve) => {
-      if (this.css) {
-        this.browserView.webContents.on("dom-ready", () => {
-          resolve(this.browserView.webContents.insertCSS(this.css));
-        });
-
-      } else {
-        resolve('');
-      }
-    });
+      this.browserView.webContents.on('dom-ready', () => {
+        if (!this.css) return resolve('')
+        resolve(this.browserView.webContents.insertCSS(this.css))
+      })
+    })
   }
 
-  public updateBounds(): void {
-    this.browserView.setBounds(this.boundsFn());
+  private calcBounds(offset: number | null, baseline: number): number {
+    if (offset === null) return baseline
+    if (offset >= 1) return offset
+    if (offset <= -1) return baseline + offset
+    return offset
   }
 }

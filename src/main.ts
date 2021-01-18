@@ -1,83 +1,83 @@
-import { app, BrowserWindow, screen } from "electron";
-import * as CONST from "./constants";
-import {IViewPaneConf, ViewPane} from "./lib/view-pane";
+import { app, screen, BrowserWindow, BrowserView } from 'electron'
+import * as Const from './const'
+import { ViewPaneConf, ViewPane } from './lib/view-pane'
 
-app.on("ready", () => {
-
-  const win = createWindow();
-  const panel = createPanel([
-    // grammarly
-    {
-      boundsFn: () => {
-        return {
-          height: win.getBounds().height - CONST.GOOGLE_TRANSLATOR_HEIGHT,
-          width: win.getBounds().width - CONST.WEBLIO_WIN_WIDTH,
-          x: 0,
-          y: 0,
-        };
-      },
-      css: CONST.GRAMMARLY_CSS,
-      url: CONST.GRAMMARLY_URL,
+const panelConfigs: ViewPaneConf[] = [
+  // grammarly
+  {
+    boundsOffset: {
+      height: - Const.GOOGLE_TRANSLATOR_HEIGHT,
+      width: - Const.WEBLIO_WIN_WIDTH,
+      x: 0,
+      y: 0,
     },
-    // google translate
-    {
-      boundsFn: () => {
-        return {
-          height: CONST.GOOGLE_TRANSLATOR_HEIGHT,
-          width: win.getBounds().width,
-          x: 0,
-          y: win.getBounds().height - CONST.GOOGLE_TRANSLATOR_HEIGHT,
-        };
-      },
-      css: CONST.GOOGLE_TRANSLATOR_CUSTOM_CSS,
-      url: CONST.GOOGLE_TRANSLATOR_URL,
+    css: Const.GRAMMARLY_CSS,
+    url: Const.GRAMMARLY_URL,
+  },
+  // google translate
+  {
+    boundsOffset: {
+      height: Const.GOOGLE_TRANSLATOR_HEIGHT,
+      width: null,
+      x: 0,
+      y: - Const.GOOGLE_TRANSLATOR_HEIGHT,
     },
-    // weblio
-    {
-      boundsFn: () => {
-        return {
-          height: win.getBounds().height - CONST.GOOGLE_TRANSLATOR_HEIGHT,
-          width: CONST.WEBLIO_WIN_WIDTH,
-          x: win.getBounds().width - CONST.WEBLIO_WIN_WIDTH,
-          y: 0
-        }
-      },
-      url: CONST.WEBLIO_URL,
-      useragent: CONST.WEBLIO_UA,
-    }
-  ]);
+    css: Const.GOOGLE_TRANSLATOR_CUSTOM_CSS,
+    url: Const.GOOGLE_TRANSLATOR_URL,
+  },
+  // weblio
+  {
+    boundsOffset: {
+      height: -Const.GOOGLE_TRANSLATOR_HEIGHT,
+      width: Const.WEBLIO_WIN_WIDTH,
+      x: -Const.WEBLIO_WIN_WIDTH,
+      y: 0
+    },
+    url: Const.WEBLIO_URL,
+    useragent: Const.WEBLIO_UA,
+  }
+]
 
-  applyPanel(win, ...panel);
-  win.on("resize", createOnResizeFn(...panel));
+app.on('ready', () => main())
 
-});
+function main() {
+  const { workArea } = screen.getPrimaryDisplay()
+  return mountPanels(
+    initPanels(panelConfigs),
+    createBrowserWindow(
+      workArea,
+      { height: Const.MAX_INITIAL_WIN_HEIGHT, width: Const.MAX_INITIAL_WIN_WIDTH}
+    )
+  )
+}
 
-function createWindow(): BrowserWindow {
-  const workArea = screen.getPrimaryDisplay().workArea;
+type WidthHeight = {
+  height: number
+  width: number
+}
+
+export function createBrowserWindow(actualSize: WidthHeight, hintSize: WidthHeight): BrowserWindow {
   return new BrowserWindow({
-    height: Math.min(workArea.height, CONST.MAX_INITIAL_WIN_HEIGHT),
-    width: Math.min(workArea.width, CONST.MAX_INITIAL_WIN_WIDTH),
+    ...calcMinSize(actualSize, hintSize),
     webPreferences: {
       contextIsolation: true
     }
-  });
+  })
 }
 
-function createPanel(configs: IViewPaneConf[]): ViewPane[] {
-  return configs.map((conf) => new ViewPane(conf));
+export function calcMinSize(actual: WidthHeight, hint: WidthHeight): WidthHeight {
+  return {
+    height: Math.min(actual.height, hint.height),
+    width: Math.min(actual.width, hint.width)
+  }
 }
 
-function applyPanel(win: BrowserWindow, ...panel: ViewPane[]) {
-  panel.forEach((pane) => {
-    pane.addTo(win);
-    pane.updateBounds();
-    pane.loadURL();
-    pane.insertCSS();
-  });
+export function initPanels(configs: ViewPaneConf[]) {
+  return configs.map((conf) => {
+    return new ViewPane(BrowserView, conf)
+  })
 }
 
-function createOnResizeFn(...panel: ViewPane[]) {
-  return () => {
-    panel.forEach((pane) => pane.updateBounds());
-  };
+export function mountPanels(panels: ViewPane[], bw: BrowserWindow) {
+  return Promise.all(panels.map((panel) => panel.mount(bw)))
 }

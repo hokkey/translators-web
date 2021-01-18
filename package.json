@@ -9,6 +9,7 @@
     "build": "tsc",
     "watch": "tsc -w",
     "lint": "tslint -c tslint.json -p tsconfig.json",
+    "lint-fix": "tslint --fix -c tslint.json -p tsconfig.json",
     "start": "npm run build && electron .",
     "clean": "rm -rf ./packages/*",
     "package": "npm run clean && npm run build && electron-packager . --out=packages --ignore=^/src --ignore=^/.idea",
