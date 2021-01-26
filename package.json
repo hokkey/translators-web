@@ -11,7 +11,8 @@
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "start": "npm run build && electron .",
     "clean": "rm -rf ./packages/*",
-    "package": "npm run clean && npm run build && electron-packager . --out=packages --ignore=^/src --ignore=^/.idea"
+    "package": "npm run clean && npm run build && electron-packager . --out=packages --ignore=^/src --ignore=^/.idea",
+    "test": "npm run lint && jest --verbose"
   },
   "keywords": [
     "Electron",
@@ -20,7 +21,8 @@
   "build": {
     "platform": "darwin",
     "arch": "x64",
-    "electronVersion": "7.1.1"
+    "electronVersion": "11.2.0",
+    "asar": true
   },
   "author": "y_hokkey",
   "license": "MIT",
@@ -29,8 +31,11 @@
     "url": "https://github.com/hokkey/translators-web.git"
   },
   "devDependencies": {
+    "@types/jest": "^26.0.20",
     "electron": "^11.2.0",
     "electron-packager": "^15.2.0",
+    "jest": "^26.6.3",
+    "ts-jest": "^26.4.4",
     "tslint": "^6.1.3",
     "typescript": "^4.1.3"
   },
