@@ -8,11 +8,12 @@
   "scripts": {
     "build": "tsc",
     "watch": "tsc -w",
+    "build-prod": "tsc --project tsconfig.prod.json",
     "lint": "tslint -c tslint.json -p tsconfig.json",
     "lint-fix": "tslint --fix -c tslint.json -p tsconfig.json",
     "start": "npm run build && electron .",
-    "clean": "rm -rf ./packages/*",
-    "package": "npm run clean && npm run build && electron-packager . --out=packages --ignore=^/src --ignore=^/.idea",
+    "clean": "rm -rf ./packages/* && rm -rf ./build/*",
+    "package": "npm run clean && npm run test && npm run build-prod && node bundle.js",
     "test": "npm run lint && jest --verbose"
   },
   "keywords": [
@@ -21,9 +22,7 @@
   ],
   "build": {
     "platform": "darwin",
-    "arch": "x64",
-    "electronVersion": "11.2.0",
-    "asar": true
+    "arch": "x64"
   },
   "author": "y_hokkey",
   "license": "MIT",
