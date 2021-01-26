@@ -7,14 +7,15 @@
   "description": "A simple Electron app which combines Grammarly and Google Translate into one window",
   "scripts": {
     "build": "tsc",
-    "watch": "tsc -w",
-    "build-prod": "tsc --project tsconfig.prod.json",
-    "lint": "tslint -c tslint.json -p tsconfig.json",
-    "lint-fix": "tslint --fix -c tslint.json -p tsconfig.json",
     "start": "npm run build && electron .",
-    "clean": "rm -rf ./packages/* && rm -rf ./build/*",
-    "package": "npm run clean && npm run test && npm run build-prod && node bundle.js",
-    "test": "npm run lint && jest --verbose"
+    "build:prod": "tsc --project tsconfig.prod.json",
+    "lint": "tslint -c tslint.json -p tsconfig.json",
+    "lint:fix": "tslint --fix -c tslint.json -p tsconfig.json",
+    "test": "npm run test:unit && npm run test:e2e",
+    "test:unit": "npm run lint && jest -c jest.unit.config.js --verbose",
+    "test:e2e": "npm run build:prod && jest -c jest.e2e.config.js --verbose --force-exit",
+    "package": "npm run clean && npm run build:prod && node bundle.js",
+    "clean": "rm -rf ./packages/* && rm -rf ./build/*"
   },
   "keywords": [
     "Electron",
@@ -35,6 +36,7 @@
     "electron": "^11.2.0",
     "electron-packager": "^15.2.0",
     "jest": "^26.6.3",
+    "spectron": "^13.0.0",
     "ts-jest": "^26.4.4",
     "tslint": "^6.1.3",
     "typescript": "^4.1.3"
